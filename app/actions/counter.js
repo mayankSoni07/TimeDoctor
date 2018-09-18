@@ -1,37 +1,16 @@
-// @flow
-import type { GetState, Dispatch } from '../reducers/types';
+export const START_TIMER_ACTION = "START_TIMER_ACTION";
+export const STOP_TIMER_ACTION = "STOP_TIMER_ACTION";
 
-export const INCREMENT_COUNTER = 'INCREMENT_COUNTER';
-export const DECREMENT_COUNTER = 'DECREMENT_COUNTER';
-
-export function increment() {
+export const startTimerAction = (param) => {
   return {
-    type: INCREMENT_COUNTER
+    type: START_TIMER_ACTION,
+    payload: { ...param }
   };
 }
 
-export function decrement() {
+export const stopTimerAction = (param) => {
   return {
-    type: DECREMENT_COUNTER
-  };
-}
-
-export function incrementIfOdd() {
-  return (dispatch: Dispatch, getState: GetState) => {
-    const { counter } = getState();
-
-    if (counter % 2 === 0) {
-      return;
-    }
-
-    dispatch(increment());
-  };
-}
-
-export function incrementAsync(delay: number = 1000) {
-  return (dispatch: Dispatch) => {
-    setTimeout(() => {
-      dispatch(increment());
-    }, delay);
+    type: STOP_TIMER_ACTION,
+    payload: { ...param }
   };
 }
