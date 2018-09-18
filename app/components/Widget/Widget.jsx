@@ -7,11 +7,6 @@ const url = require('url')
 let win;
 
 export function openWidget(time) {
-
-  ipcMain.on('reply', (event, data) => {
-    console.log("reply", event, data)
-  })
-
   let displays = electron.screen.getAllDisplays();
   win = new BrowserWindow({
     alwaysOnTop: true,

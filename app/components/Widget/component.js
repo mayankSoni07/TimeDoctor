@@ -21,23 +21,20 @@ export default class component extends React.Component {
   }
 
   render() {
-    console.log('time component js : ', this.state.time)
     return (
       <div style={{ backgroundColor: 'gray', width: '100%', height: '100%' }}>
         <div>{ms(this.state.time)}</div>
         <div onClick={() => {
-          ipcRenderer.send('reply', 'dataToSend and close')
-          window.close()
-        }}><strong>X</strong></div>
+          ipcRenderer.send('closeWidget');
+        }}><strong>CLOSE WIDGET</strong></div>
 
         <div onClick={() => {
           ipcRenderer.send('startTimer', 'dataToSend');
         }}><strong>START</strong></div>
 
         <div onClick={() => {
-          debugger
-          self.setState({ time: 0 });
           ipcRenderer.send('stopTimer', 'dataToSend');
+          setTimeout(()=>self.setState({ time: 0 }), 100)
         }}><strong>STOP</strong></div>
       </div>
     );

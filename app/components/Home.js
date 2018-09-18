@@ -6,7 +6,7 @@ const ipcMain = require('electron').remote.ipcMain;
 import styles from './Home.css';
 import { openWidget, closeWidget, sendTime } from './Widget/Widget.jsx';
 const ms = require('pretty-ms')
-import { startTimerAction, stopTimerAction } from '../actions/counter';
+import { startTimerAction, stopTimerAction, isOpenClosedWidgetAction } from '../actions/counter';
 
 let self;
 
@@ -14,13 +14,15 @@ class Home extends Component {
   constructor(props) {
     super(props);
     self = this;
-    ipcMain.on('startTimer', (event, data) => {
-      console.log("startTimer", event, data);
+    ipcMain.on('startTimer', () => {
       self.startTimer();
     })
-    ipcMain.on('stopTimer', (event, data) => {
-      console.log("stopTimer", event, data);
+    ipcMain.on('stopTimer', () => {
       self.resetTimer();
+    })
+    ipcMain.on('closeWidget', () => {
+      self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: false })
+      closeWidget()
     })
   }
 
@@ -39,21 +41,25 @@ class Home extends Component {
 
   render() {
     let start = (this.props.time == 0) ?
-      <button onClick={this.startTimer}>start</button> :
+      <button onClick={this.startTimer}>START TIMER</button> :
       null
     let stop = (this.props.time == 0 || !this.props.isOn) ?
       null :
-      <button onClick={this.resetTimer}>stop</button>
+      <button onClick={this.resetTimer}>STOP TIMER</button>
 
     return (
       <div data-tid="container">
         <h2>TIME DOCTOR</h2>
-        <div onClick={() => openWidget(this.props.time)}>
-          Open Widget
-        </div>
-        <div onClick={() => closeWidget()}>
-          Close Widget
-        </div>
+
+        {!this.props.isOpenClosedWidget && <div onClick={() => {
+          self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: true })
+          openWidget(this.props.time)
+        }}>Open Widget</div>}
+
+        {this.props.isOpenClosedWidget && <div onClick={() => {
+          self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: false })
+          closeWidget()
+        }}>Close Widget</div>}
 
         <div>
           <h3>timer: {ms(this.props.time)}</h3>
@@ -70,11 +76,12 @@ const mapStateToProps = state => {
   return {
     isOn: state.counter.isOn,
     time: state.counter.time,
-    startTime: state.counter.startTime
+    startTime: state.counter.startTime,
+    isOpenClosedWidget: state.counter.isOpenClosedWidget
   }
 }
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  startTimerAction, stopTimerAction
+  startTimerAction, stopTimerAction, isOpenClosedWidgetAction
 }, dispatch)
 
 Home = connect(mapStateToProps, mapDispatchToProps)(Home);
