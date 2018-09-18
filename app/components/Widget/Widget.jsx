@@ -6,7 +6,7 @@ const url = require('url')
 
 let win;
 
-export function Widget() {
+export function openWidget() {
 
   ipcMain.on('reply', (event, data) => {
     console.log("reply", event, data)
@@ -38,3 +38,6 @@ export function Widget() {
   win.on('closed', () => win = null);
 }
 
+export function closeWidget () {
+  win.close()
+}
