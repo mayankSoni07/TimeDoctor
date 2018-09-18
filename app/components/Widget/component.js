@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 const { ipcRenderer } = require('electron');
-const ms = require('pretty-ms')
-import { startTimerAction, stopTimerAction } from '../../actions/counter';
+const ms = require('pretty-ms');
 
 let self;
 
@@ -34,7 +33,7 @@ export default class component extends React.Component {
 
         <div onClick={() => {
           ipcRenderer.send('stopTimer', 'dataToSend');
-          setTimeout(()=>self.setState({ time: 0 }), 100)
+          setTimeout(()=>self.setState({ time: 0 }), 300)
         }}><strong>STOP</strong></div>
       </div>
     );

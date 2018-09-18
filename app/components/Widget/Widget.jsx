@@ -17,15 +17,15 @@ export function openWidget(time) {
     y: displays[0].bounds.height - 40 - 100
   });
 
-  win.webContents.once('dom-ready', () => {
-    win.webContents.send('ready', time);
-  })
-
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'components/Widget/render.html'),
     protocol: 'file:',
     slashes: true
   }));
+
+  win.webContents.once('dom-ready', () => {
+    win.webContents.send('ready', time);
+  })
 
   win.once('ready-to-show', () => win.show());
   win.on('closed', () => win = null);

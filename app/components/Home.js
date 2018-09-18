@@ -6,7 +6,9 @@ const ipcMain = require('electron').remote.ipcMain;
 import styles from './Home.css';
 import { openWidget, closeWidget, sendTime } from './Widget/Widget.jsx';
 const ms = require('pretty-ms')
-import { startTimerAction, stopTimerAction, isOpenClosedWidgetAction } from '../actions/counter';
+import {
+  startTimerAction, stopTimerAction, isOpenClosedWidgetAction, changeTotalTimeAction
+} from '../actions/counter';
 
 let self;
 
@@ -26,6 +28,12 @@ class Home extends Component {
     })
   }
 
+  componentWillMount() {
+    let totalTime = localStorage.getItem("totalTime");
+    if (totalTime)
+      self.props.changeTotalTimeAction({ "totalTime": parseInt(totalTime) });
+  }
+
   startTimer() {
     self.props.startTimerAction({ isOn: true, time: 0, startTime: Date.now() });
     self.timer = setInterval(() => {
@@ -35,7 +43,7 @@ class Home extends Component {
   }
 
   resetTimer() {
-    self.props.stopTimerAction({ time: 0, isOn: false });
+    self.props.stopTimerAction({ start: 0, time: 0, isOn: false });
     clearInterval(self.timer)
   }
 
@@ -46,10 +54,16 @@ class Home extends Component {
     let stop = (this.props.time == 0 || !this.props.isOn) ?
       null :
       <button onClick={this.resetTimer}>STOP TIMER</button>
+    let currentTime = new Date().toTimeString();
 
     return (
       <div data-tid="container">
         <h2>TIME DOCTOR</h2>
+
+        {this.props.isOn ?
+          <label style={{ color: 'green' }}>GREEN</label> :
+          <label style={{ color: 'blue' }}>BLUE</label>
+        }
 
         {!this.props.isOpenClosedWidget && <div onClick={() => {
           self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: true })
@@ -67,6 +81,9 @@ class Home extends Component {
           {stop}
         </div>
 
+        <div>Worked Today : {ms(this.props.totalTime)}</div>
+        <div>Company Time : {currentTime}</div>
+
       </div>
     );
   }
@@ -77,11 +94,12 @@ const mapStateToProps = state => {
     isOn: state.counter.isOn,
     time: state.counter.time,
     startTime: state.counter.startTime,
-    isOpenClosedWidget: state.counter.isOpenClosedWidget
+    isOpenClosedWidget: state.counter.isOpenClosedWidget,
+    totalTime: state.counter.totalTime
   }
 }
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  startTimerAction, stopTimerAction, isOpenClosedWidgetAction
+  startTimerAction, stopTimerAction, isOpenClosedWidgetAction, changeTotalTimeAction
 }, dispatch)
 
 Home = connect(mapStateToProps, mapDispatchToProps)(Home);
