@@ -53,6 +53,7 @@ class Home extends Component {
 
   /** Used to Stop timer. */
   resetTimer() {
+    sendTime(0, false);
     /** Dispatch action to stop timer. */
     self.props.stopTimerAction({ start: 0, time: 0, isOn: false });
     /** Clear time interval to stop timer. */
