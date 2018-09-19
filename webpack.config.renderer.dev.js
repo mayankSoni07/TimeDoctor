@@ -242,7 +242,7 @@ export default merge.smart(baseConfig, {
 
   node: {
     __dirname: false,
-    __filename: false
+    __filename: false,
   },
 
   devServer: {

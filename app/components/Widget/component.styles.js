@@ -1,5 +1,8 @@
 /** Styles for component Component */
 export const styles = {
+    container:{
+        backgroundColor: 'gray',
+    },
     closeDiv:{
         marginTop: '10px'
     },

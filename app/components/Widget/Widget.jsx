@@ -19,13 +19,14 @@ export function openWidget(time, isOn) {
     x: displays[0].bounds.width - 200,
     y: displays[0].bounds.height - 40 - 100
   });
-
-  /** Load url event. */
-  win.loadURL(url.format({
+  let pathUrl = {
     pathname: path.join(__dirname, 'components/Widget/render.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+    protocol: 'file:'
+  }
+  /** Load url event. */
+  win.loadURL(url.format(pathUrl));
+
+
 
   /** Send time to ready event to start timer in widget. */
   win.webContents.once('dom-ready', () => {
