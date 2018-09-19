@@ -1,7 +1,7 @@
-// import (' https://fonts.google.com/specimen/Roboto');
-
+/** Styles for component Component */
 export const styles = {
-    container:{
+    closeDiv:{
+        marginTop: '10px'
     },
     closeSign:{
         color: '#FF0000'

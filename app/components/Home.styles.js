@@ -1,5 +1,4 @@
-// import (' https://fonts.google.com/specimen/Roboto');
-
+/** Styles for Home Component */
 export const styles = {
     greenHeader: {
         backgroundColor: '#96cb7f',
