@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 const { ipcRenderer } = require('electron');
 const ms = require('pretty-ms');
 
+import { styles } from './component.styles';
+
 let self;
 
 export default class component extends React.Component {
@@ -9,32 +11,34 @@ export default class component extends React.Component {
     super(props);
     self = this;
     this.state = {
-      time: 0
+      time: 0, isOn: false
     }
-    ipcRenderer.on('ready', (event, time) => {
-      this.setState({ time: time })
+    ipcRenderer.on('ready', (event, data) => {
+      this.setState({ time: data.time, isOn: data.isOn })
     })
-    ipcRenderer.on('time', (event, time) => {
-      this.setState({ time: time });
+    ipcRenderer.on('time', (event, data) => {
+      this.setState({ time: data.time, isOn: data.isOn });
     })
   }
 
   render() {
     return (
-      <div style={{ backgroundColor: 'gray', width: '100%', height: '100%' }}>
-        <div>{ms(this.state.time)}</div>
-        <div onClick={() => {
-          ipcRenderer.send('closeWidget');
-        }}><strong>CLOSE WIDGET</strong></div>
+      <div style={styles.container}>
+        <div><h3>Timer: {ms(this.state.time)}</h3></div>
 
-        <div onClick={() => {
+        {!this.state.isOn && <div style={styles.startLabel} onClick={() => {
+          this.setState({isOn: true})
           ipcRenderer.send('startTimer', 'dataToSend');
-        }}><strong>START</strong></div>
+        }}><strong>START</strong></div>}
 
-        <div onClick={() => {
+        {this.state.isOn &&<div style={styles.stopLabel} onClick={() => {
           ipcRenderer.send('stopTimer', 'dataToSend');
-          setTimeout(()=>self.setState({ time: 0 }), 300)
-        }}><strong>STOP</strong></div>
+          setTimeout(() => self.setState({ time: 0, isOn: false }), 300)
+        }}><strong>STOP</strong></div>}
+
+        <div onClick={() => ipcRenderer.send('closeWidget')}>
+        <strong><span style={styles.closeSign}>X CLOSE</span></strong>
+        </div>
       </div>
     );
   }

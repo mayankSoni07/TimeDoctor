@@ -6,7 +6,7 @@ const url = require('url')
 
 let win;
 
-export function openWidget(time) {
+export function openWidget(time, isOn) {
   let displays = electron.screen.getAllDisplays();
   win = new BrowserWindow({
     alwaysOnTop: true,
@@ -24,7 +24,7 @@ export function openWidget(time) {
   }));
 
   win.webContents.once('dom-ready', () => {
-    win.webContents.send('ready', time);
+    win.webContents.send('ready', {time:time, isOn:isOn});
   })
 
   win.once('ready-to-show', () => win.show());
@@ -35,6 +35,6 @@ export function closeWidget() {
   win.close()
 }
 
-export function sendTime(time) {
-  win && win.webContents.send('time', time);
+export function sendTime(time, isOn) {
+  win && win.webContents.send('time', {time:time, isOn: isOn});
 }

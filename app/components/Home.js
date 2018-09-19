@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 const ipcMain = require('electron').remote.ipcMain;
-import styles from './Home.css';
-import { openWidget, closeWidget, sendTime } from './Widget/Widget.jsx';
 const ms = require('pretty-ms')
+
+import { styles } from './Home.styles';
+
+import { openWidget, closeWidget, sendTime } from './Widget/Widget.jsx';
 import {
   startTimerAction, stopTimerAction, isOpenClosedWidgetAction, changeTotalTimeAction
 } from '../actions/counter';
@@ -37,7 +39,7 @@ class Home extends Component {
   startTimer() {
     self.props.startTimerAction({ isOn: true, time: 0, startTime: Date.now() });
     self.timer = setInterval(() => {
-      sendTime(Date.now() - self.props.startTime);
+      sendTime(Date.now() - self.props.startTime, self.props.isOn);
       self.props.startTimerAction({ time: Date.now() - self.props.startTime });
     }, 1);
   }
@@ -49,40 +51,54 @@ class Home extends Component {
 
   render() {
     let start = (this.props.time == 0) ?
-      <button onClick={this.startTimer}>START TIMER</button> :
-      null
+      (this.props.isOn ?
+        <img style={styles.playStopImg} src={require('../../internals/img/play_green.png')} onClick={this.startTimer} />
+        : <img style={styles.playStopImg} src={require('../../internals/img/play_blue.png')} onClick={this.startTimer} />
+      ) : null
     let stop = (this.props.time == 0 || !this.props.isOn) ?
       null :
-      <button onClick={this.resetTimer}>STOP TIMER</button>
+      (this.props.isOn ?
+        <img style={styles.playStopImg} src={require('../../internals/img/stop_green.png')} onClick={this.resetTimer} />
+        : <img style={styles.playStopImg} src={require('../../internals/img/stop_blue.png')} onClick={this.resetTimer} />
+      )
     let currentTime = new Date().toTimeString();
 
     return (
-      <div data-tid="container">
-        <h2>TIME DOCTOR</h2>
-
-        {this.props.isOn ?
-          <label style={{ color: 'green' }}>GREEN</label> :
-          <label style={{ color: 'blue' }}>BLUE</label>
-        }
-
-        {!this.props.isOpenClosedWidget && <div onClick={() => {
-          self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: true })
-          openWidget(this.props.time)
-        }}>Open Widget</div>}
-
-        {this.props.isOpenClosedWidget && <div onClick={() => {
-          self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: false })
-          closeWidget()
-        }}>Close Widget</div>}
-
-        <div>
-          <h3>timer: {ms(this.props.time)}</h3>
-          {start}
-          {stop}
+      <div style={styles.container}>
+        <div style={this.props.isOn ? styles.greenHeader : styles.blueHeader} >
+          <label style={styles.headerLabel}><h3>TIME DOCTOR</h3></label>
         </div>
 
-        <div>Worked Today : {ms(this.props.totalTime)}</div>
-        <div>Company Time : {currentTime}</div>
+        <div style={styles.bodyData}>
+          {!this.props.isOpenClosedWidget &&
+            <div onClick={() => {
+              self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: true })
+              openWidget(this.props.time, this.props.isOn)
+            }} style={styles.widgetDiv}
+            ><img style={styles.openWidgetImg} src={require('../../internals/img/open_widget.png')} />
+              <label style={styles.widgetLabel}>Open Widget</label>
+            </div>}
+
+          {this.props.isOpenClosedWidget &&
+            <div onClick={() => {
+              self.props.isOpenClosedWidgetAction({ isOpenClosedWidget: false })
+              closeWidget()
+            }} style={styles.widgetDiv}
+            ><img style={styles.closeWidgetImg} src={require('../../internals/img/close_widget.png')} />
+              <label style={styles.widgetLabel}>Close Widget</label>
+            </div>}
+
+          <div style={styles.timerDiv}>
+            <div><h3>Timer: {ms(this.props.time)}</h3></div>
+            {start}
+            {stop}
+          </div>
+        </div>
+
+        <div style={styles.workedDetail}>
+          <div>Worked Today : {ms(this.props.totalTime)}</div>
+          <div>Company Time : {currentTime}</div>
+        </div>
 
       </div>
     );
